@@ -8,7 +8,7 @@ See the [VTK build instructions](https://gitlab.kitware.com/vtk/vtk/-/blob/maste
 
 Make and docker will do the rest (download and compile VTK and assemble the docker image):
 
-    docker liggghts-jammy
+    make liggghts-jammy
 
 ## Dockerhub
 
