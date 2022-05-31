@@ -11,10 +11,6 @@ RUN apt-get update && \
     libosmesa6-dev \
     build-essential
 
-#RUN apt-get install -y build-essential
-#    libvtk7.1 \
-#    libvtk7-dev
-
 #RUN apt-get install -y wget
 
 # Setup localization
@@ -36,36 +32,21 @@ ENV HOME /home/$USER
 ENV USER $USER
 WORKDIR $HOME
 
-RUN git clone https://github.com/CFDEMproject/LIGGGHTS-PUBLIC.git
-
+# Install the local copy of VTK
 RUN mkdir vtk
 ADD vtk/include/vtk-9.1 vtk/include
 ADD vtk/lib vtk/lib
-ADD Makefile.user LIGGGHTS-PUBLIC/src/MAKE/Makefile.user
-RUN export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/liggghts/vtk/lib
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/liggghts/vtk/lib
 
+# Compile LIGGGHTS
+RUN git clone https://github.com/CFDEMproject/LIGGGHTS-PUBLIC.git
+ADD Makefile.user LIGGGHTS-PUBLIC/src/MAKE/Makefile.user
 WORKDIR $HOME/LIGGGHTS-PUBLIC/src
 RUN sed -i 's/ostringstream()/ostringstream().flush()/g' utils.h
 RUN make auto
 
+# Create a symlink to the executable and set the path
 WORKDIR $HOME
 RUN mkdir bin && \
     ln -s $HOME/LIGGGHTS-PUBLIC/src/lmp_auto $HOME/bin/liggghts
 ENV PATH=$PATH:$HOME/bin
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/liggghts/vtk/lib
-
-
-#RUN    cd LIGGGHTS-PUBLIC/src && \
-#    make auto
-
-#USER root
-#RUN apt-get install -y wget
-#USER $USER
-
-#RUN wget https://www.vtk.org/files/release/9.1/VTK-9.1.0.tar.gz
-
-#USER root
-#RUN apt-get install -y cmake libosmesa6-dev ninja
-#USER $USER
-
-#cmake -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX=../install -DModule_vtkIOMPIParallel:BOOL=ON -DVTK_Group_MPI:BOOL=ON -DVTK_Group_Rendering:BOOL=OFF -DVTK_RENDERING_BACKEND:STRING=None -DVTK_USE_X:BOOL=OFF -DModule_vtkIOMPIImage:BOOL=ON -DModule_vtkParallelMPI:BOOL=ON -DVTK_OPENGL_HAS_OSMESA=ON ..

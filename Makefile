@@ -17,8 +17,8 @@ VTK_OPT=-DCMAKE_INSTALL_PREFIX=../../$(VTK_INS) \
 				-DVTK_USE_X:BOOL=OFF \
 				-DVTK_OPENGL_HAS_OSMESA=ON
 
-liggghts-jammy:
-	docker build -t daviddeklerk/liggghts jammy
+liggghts-jammy : $(VTK_INS)
+	docker build -t daviddeklerk/liggghts $(CONTEXT_DIR)
 
 
 $(VTK_INS) : $(VTK_SRC)
@@ -32,5 +32,5 @@ $(VTK_INS) : $(VTK_SRC)
 $(VTK_SRC) : $(VTK_TAR)
 	tar xfv $<
 
-$(VTK_TAR):
+$(VTK_TAR) :
 	wget $(VTK_URL)
