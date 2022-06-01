@@ -50,3 +50,6 @@ WORKDIR $HOME
 RUN mkdir bin && \
     ln -s $HOME/LIGGGHTS-PUBLIC/src/lmp_auto $HOME/bin/liggghts
 ENV PATH=$PATH:$HOME/bin
+
+# Fix MPI issues: github.com/open-mpi/ompi/issues/4948
+ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
